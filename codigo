@@ -1,0 +1,111 @@
+import pygame
+from random import randint
+
+pygame.init()
+
+personagem_pos_x = 60
+personagem_pos_y = 320
+pos_x = 340
+pos_y = 350
+pos_a = 665
+pos_b = 990
+pos_c = 1315
+timer = 0
+tempo_segundo = 0
+
+velocidade = 10
+
+velocidade_pedra = 6
+fundo = pygame.image.load('tela4.png')
+personagem = pygame.image.load('personagem8.png')
+personagem_rect = personagem.get_rect(x=personagem_pos_x, y=personagem_pos_y)
+pedra = pygame.image.load('pedra8.png')
+pedra1_rect = pedra.get_rect(x=pos_x, y=pos_y)
+pedra2_rect = pedra.get_rect(x=665, y=pos_y)
+pedra3_rect = pedra.get_rect(x=990, y=pos_y)
+pedra4_rect = pedra.get_rect(x=1315, y=pos_y)
+pedras_rect = [pedra1_rect, pedra2_rect, pedra3_rect, pedra4_rect]
+
+font = pygame.font.SysFont('none',30)
+texto = font.render("Tempo:",True,(0,0,0),(255,255,255))
+pos_texto = texto.get_rect()
+pos_texto.center = (65,50)
+
+font = pygame.font.SysFont('none',30)
+texto_gameover = font.render("Gamer Over", True,(0,0,0),(255,255,255))
+pre_texto_gameover = texto_gameover.get_rect()
+pre_texto_gameover.center = (105,90)
+
+
+janela = pygame.display.set_mode((1100,600))
+pygame.display.set_caption("Stonejumper")
+
+janela_aberta = True
+estaPulando = False
+vidas = 5
+while janela_aberta :
+    pygame.time.delay(50)
+
+    event = pygame.event.poll()
+    if event.type == pygame.QUIT:
+        janela_aberta = False
+        break
+
+    comandos = pygame.key.get_pressed()
+    if estaPulando or comandos[pygame.K_UP]:
+        pygame.event.clear()
+        personagem_rect.y -= velocidade + 40
+        estaPulando = personagem_rect.y >= 200
+    else:
+        if personagem_rect.y <= 320:
+            personagem_rect.y -= velocidade - 16
+
+    tropecou = personagem_rect.collidelist(pedras_rect) >= 0
+    print(tropecou, vidas)
+    if tropecou and vidas == 0:
+        janela_aberta = False
+        break
+    elif tropecou:
+        vidas -= 1
+    texto_vidas = font.render("Vidas: " + str(vidas), True, (0, 0, 0), (255, 255, 255))
+    pre_texto_vidas = texto_vidas.get_rect()
+    pre_texto_vidas.center = (105, 90)
+
+    if pedra1_rect.x <= -200:
+        pedra1_rect.x = 1070
+    pedra1_rect.x -= velocidade_pedra
+    if pedra2_rect.x <= -200:
+        pedra2_rect.x = 1070
+    pedra2_rect.x -= velocidade_pedra
+    if pedra3_rect.x <= -200:
+        pedra3_rect.x = 1070
+    pedra3_rect.x -= velocidade_pedra
+    if pedra4_rect.x <= -200:
+        pedra4_rect.x = 1070
+    pedra4_rect.x -= velocidade_pedra
+
+    if (timer <20):
+        timer +=1
+    else:
+        tempo_segundo +=1
+        texto = font.render("Tempo:"+str(tempo_segundo), True, (0, 0, 0), (255, 255, 255))
+        timer = 0
+
+    pos_x -= velocidade_pedra
+    pos_a -= velocidade_pedra + 0.1
+    pos_b -= velocidade_pedra + 0.2
+    pos_c -= velocidade_pedra + 0.3
+
+
+    janela.blit(fundo, (0,0))
+    janela.blit(personagem, personagem_rect)
+    janela.blit(pedra, pedra1_rect)
+    janela.blit(pedra, pedra2_rect)
+    janela.blit(pedra, pedra3_rect)
+    janela.blit(pedra, pedra4_rect)
+    janela.blit(texto, pos_texto)
+    janela.blit(texto_vidas, pre_texto_vidas)
+    pygame.display.update()
+
+
+pygame.quit()
